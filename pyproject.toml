@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "scrapy-sg-proxy"
+version = "0.1.0"
+description = "Scrapy middleware for mobile proxies with a rotation link: route through one endpoint, rotate the IP when a site blocks, retry. Built for Singapore Mobile Proxy."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Xavier Fok" }]
+requires-python = ">=3.10"
+dependencies = ["scrapy>=2.13", "proxy-rotator-sg>=1.1.0"]
+keywords = ["scrapy", "scrapy-middleware", "mobile-proxy", "proxy-rotation", "rotating-proxy", "4g-proxy", "singapore", "web-scraping"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Framework :: Scrapy",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Topic :: Internet :: WWW/HTTP",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[project.urls]
+Homepage = "https://github.com/Xavierfok/scrapy-sg-proxy"
+Issues = "https://github.com/Xavierfok/scrapy-sg-proxy/issues"
+
+[tool.hatch.build.targets.sdist]
+include = ["scrapy_sg_proxy", "tests", "README.md", "LICENSE"]
