@@ -2,7 +2,8 @@ import pytest
 from proxy_rotator import RotationError, RotationResult
 from scrapy.exceptions import NotConfigured
 from scrapy.http import Request, Response
-from scrapy.utils.test import get_crawler
+from scrapy.settings import Settings
+from scrapy.statscollectors import MemoryStatsCollector
 from twisted.internet import defer
 
 from scrapy_sg_proxy import SingaporeProxyMiddleware
@@ -46,9 +47,17 @@ def run(coro):
     return out[0]
 
 
+class StubCrawler:
+    """Just enough of a Crawler for from_crawler(); a real one needs a reactor."""
+
+    def __init__(self, settings=None):
+        self.settings = Settings(settings or {})
+        self.stats = MemoryStatsCollector(self)
+
+
 def make_mw(proxy=None, **kw):
-    crawler = get_crawler()
-    return SingaporeProxyMiddleware(proxy or FakeProxy(), stats=crawler.stats, run_in_thread=run_now, **kw), crawler.stats
+    stats = StubCrawler().stats
+    return SingaporeProxyMiddleware(proxy or FakeProxy(), stats=stats, run_in_thread=run_now, **kw), stats
 
 
 def send(mw, url="https://example.com/", **meta):
@@ -155,8 +164,8 @@ def test_no_rotate_url_means_proxy_only():
 
 
 def test_from_crawler_reads_settings():
-    crawler = get_crawler(
-        settings_dict={
+    crawler = StubCrawler(
+        {
             "SGPROXY_URL": PROXY,
             "SGPROXY_ROTATE_URL": "https://rotate.example.com/abc",
             "SGPROXY_ROTATE_ON": [403, 503],
@@ -174,4 +183,4 @@ def test_from_crawler_reads_settings():
 
 def test_from_crawler_requires_proxy_url():
     with pytest.raises(NotConfigured):
-        SingaporeProxyMiddleware.from_crawler(get_crawler())
+        SingaporeProxyMiddleware.from_crawler(StubCrawler())
