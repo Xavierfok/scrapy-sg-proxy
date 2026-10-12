@@ -19,8 +19,10 @@ The rotation logic (cooldowns, `429 Retry-After` on the rotation link, polling f
 ## Install
 
 ```bash
-pip install scrapy-sg-proxy
+pip install git+https://github.com/Xavierfok/scrapy-sg-proxy
 ```
+
+It isn't on PyPI yet, so install it from GitHub (its dependencies, Scrapy and `proxy-rotator-sg`, come from PyPI as usual). `pip install scrapy-sg-proxy` will work once the first release is published.
 
 ## Configure
 
